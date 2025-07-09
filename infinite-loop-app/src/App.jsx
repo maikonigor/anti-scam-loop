@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import FullscreenImage from './FullscreenImage';
 import ChaoticModal from './ChaoticModal'; // Importar o novo componente
-
+import alertaSound from './assets/biohazard.mp3';
 // URL de uma imagem de placeholder
-const PLACEHOLDER_IMAGE_URL = 'https://via.placeholder.com/1920x1080.png?text=Educational+Loop+Active';
+const PLACEHOLDER_IMAGE_URL = 'https://pombaloka.com/wp-content/uploads/2021/02/negao-da-rola-gigante-comendo-gostosa-08.gif';
 
 function App() {
   const [isLoopActive, setIsLoopActive] = useState(false);
@@ -70,7 +70,7 @@ function App() {
 
     // ÁUDIO
     if (!audioRef.current) {
-      audioRef.current = new Audio(PLACEHOLDER_AUDIO_URL);
+      audioRef.current = new Audio(alertaSound);
       audioRef.current.loop = true;
     }
     const playAudio = async () => {
