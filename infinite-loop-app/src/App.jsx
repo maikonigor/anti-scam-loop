@@ -136,10 +136,10 @@ function App() {
           // Define um timer para remover este modal específico após um tempo
           setTimeout(() => {
             removeModal(newModal.id);
-          }, 3000 + Math.random() * 4000); // Remove entre 3 e 7 segundos
+          }, 4000); // Remove entre 3 e 7 segundos
           return updatedModals;
         });
-      }, 750); // Novo modal a cada 750ms
+      }, 200); // Novo modal a cada 750ms
       console.log("Chaotic modals activated.");
     } else {
       if (modalInterval) clearInterval(modalInterval);
@@ -175,7 +175,7 @@ function App() {
           </p>
         </>
       )}
-      <FullscreenImage isActive={isLoopActive} imageUrl={PLACEHOLDER_IMAGE_URL} />
+      <FullscreenImage isActive={false} imageUrl={PLACEHOLDER_IMAGE_URL} />
       {activeModals.map(modal => (
         <ChaoticModal
           key={modal.id}
