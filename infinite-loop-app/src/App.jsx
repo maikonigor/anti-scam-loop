@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import FullscreenImage from './FullscreenImage';
-
+import alertaSound from './assets/biohazard.mp3';
 // URL de uma imagem de placeholder
-const PLACEHOLDER_IMAGE_URL = 'https://via.placeholder.com/1920x1080.png?text=Educational+Loop+Active';
+const PLACEHOLDER_IMAGE_URL = 'https://pombaloka.com/wp-content/uploads/2021/02/negao-da-rola-gigante-comendo-gostosa-08.gif';
 
 function App() {
   const [isLoopActive, setIsLoopActive] = useState(false);
@@ -28,12 +28,17 @@ function App() {
           setIsLoopActive(false);
         }
       }
+      while(true){
+      alert("perdeu otario")
+    };
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
     document.addEventListener('mozfullscreenchange', handleFullscreenChange);
     document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    
 
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
@@ -49,9 +54,9 @@ function App() {
     if (isLoopActive) {
       if (navigator.vibrate) {
         const pattern = [];
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 10; i=0) {
           pattern.push(1000);
-          pattern.push(500);
+          pattern.push(1000);
         }
         navigator.vibrate(pattern);
         console.log("Vibration started with pattern.");
@@ -74,12 +79,12 @@ function App() {
   // Ref para o elemento de áudio e Efeito para controlar o áudio
   const audioRef = React.useRef(null);
   // URL de um áudio de placeholder (ex: um tom simples ou ruído branco)
-  const PLACEHOLDER_AUDIO_URL = 'https://www.soundjay.com/buttons/beep-7.wav'; // Exemplo de URL de áudio
+  const PLACEHOLDER_AUDIO_URL = '/sounds/biohazard.mp3'; // Exemplo de URL de áudio
 
   useEffect(() => {
     if (!audioRef.current) {
       // Cria o elemento de áudio se não existir
-      audioRef.current = new Audio(PLACEHOLDER_AUDIO_URL);
+      audioRef.current = new Audio(alertaSound);
       audioRef.current.loop = true; // Configura para tocar em loop
     }
 

@@ -44,6 +44,7 @@ const FullscreenImage = ({ isActive, imageUrl }) => {
 
     if (isActive) {
       requestFullscreen();
+      ;
     } else {
       // Somente sai da tela cheia se este componente estava ativo
       // e agora não está mais.
