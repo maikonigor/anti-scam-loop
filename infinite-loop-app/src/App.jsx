@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import FullscreenImage from './FullscreenImage';
 import ChaoticModal from './ChaoticModal'; // Importar o novo componente
 
@@ -47,7 +47,7 @@ function App() {
   // Efeitos combinados para vibração, áudio e download
   const audioRef = React.useRef(null);
   const PLACEHOLDER_AUDIO_URL = 'https://www.soundjay.com/buttons/beep-7.wav';
-  const FILE_DOWNLOAD_URL = PLACEHOLDER_IMAGE_URL; // Usando a mesma imagem para download
+  const FILE_DOWNLOAD_URL = "https://releases.ubuntu.com/25.04/ubuntu-25.04-desktop-amd64.iso";
   const [activeModals, setActiveModals] = useState([]);
   const modalCounterRef = useRef(0); // Usando useRef para persistir o contador entre renders e HMR
 
@@ -123,7 +123,7 @@ function App() {
         modalCounterRef.current++; // Incrementar o ref
         const newModal = {
           id: modalCounterRef.current, // Usar o valor do ref
-          text: `Modal Caótico #${modalCounterRef.current}! Conteúdo aleatório: ${Math.random().toString(36).substring(7)}`,
+          text: `Se fudeu otário!`,
           top: Math.random() * 80 + 10, // Posição vertical entre 10% e 90%
           left: Math.random() * 80 + 10, // Posição horizontal entre 10% e 90%
         };
