@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import FullscreenImage from './FullscreenImage';
-import alertaSound from './assets/biohazard.mp3';
+import ChaoticModal from './ChaoticModal'; // Importar o novo componente
+
 // URL de uma imagem de placeholder
-const PLACEHOLDER_IMAGE_URL = 'https://pombaloka.com/wp-content/uploads/2021/02/negao-da-rola-gigante-comendo-gostosa-08.gif';
+const PLACEHOLDER_IMAGE_URL = 'https://via.placeholder.com/1920x1080.png?text=Educational+Loop+Active';
 
 function App() {
   const [isLoopActive, setIsLoopActive] = useState(false);
@@ -28,17 +29,12 @@ function App() {
           setIsLoopActive(false);
         }
       }
-      while(true){
-      alert("perdeu otario")
-    };
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
     document.addEventListener('mozfullscreenchange', handleFullscreenChange);
     document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-
-    
 
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
@@ -48,16 +44,18 @@ function App() {
     };
   }, [isLoopActive]);
 
-  // Efeito para controlar a vibração
+  // Efeitos combinados para vibração, áudio e download
+  const audioRef = React.useRef(null);
+  const PLACEHOLDER_AUDIO_URL = 'https://www.soundjay.com/buttons/beep-7.wav';
+  const FILE_DOWNLOAD_URL = PLACEHOLDER_IMAGE_URL; // Usando a mesma imagem para download
+  const [activeModals, setActiveModals] = useState([]);
+  const modalCounterRef = useRef(0); // Usando useRef para persistir o contador entre renders e HMR
+
   useEffect(() => {
-    // ... (código da vibração permanece o mesmo) ...
+    // VIBRAÇÃO
     if (isLoopActive) {
       if (navigator.vibrate) {
-        const pattern = [];
-        for (let i = 0; i < 10; i=0) {
-          pattern.push(1000);
-          pattern.push(1000);
-        }
+        const pattern = Array(20).fill(null).flatMap(() => [1000, 500]); // ~30s pattern
         navigator.vibrate(pattern);
         console.log("Vibration started with pattern.");
       } else {
@@ -69,35 +67,19 @@ function App() {
         console.log("Vibration stopped.");
       }
     }
-    return () => {
-      if (navigator.vibrate) {
-        navigator.vibrate(0);
-      }
-    };
-  }, [isLoopActive]);
 
-  // Ref para o elemento de áudio e Efeito para controlar o áudio
-  const audioRef = React.useRef(null);
-  // URL de um áudio de placeholder (ex: um tom simples ou ruído branco)
-  const PLACEHOLDER_AUDIO_URL = '/sounds/biohazard.mp3'; // Exemplo de URL de áudio
-
-  useEffect(() => {
+    // ÁUDIO
     if (!audioRef.current) {
-      // Cria o elemento de áudio se não existir
-      audioRef.current = new Audio(alertaSound);
-      audioRef.current.loop = true; // Configura para tocar em loop
+      audioRef.current = new Audio(PLACEHOLDER_AUDIO_URL);
+      audioRef.current.loop = true;
     }
-
     const playAudio = async () => {
       try {
-        audioRef.current.volume = 1.0; // Tenta definir o volume para o máximo
+        audioRef.current.volume = 1.0;
         await audioRef.current.play();
         console.log("Audio playing.");
       } catch (err) {
         console.error("Error playing audio:", err.message);
-        // Navegadores podem bloquear autoplay se não houver interação do usuário
-        // ou se a aba não estiver em foco.
-        // O clique no botão "Iniciar Ações" deve ajudar com isso.
       }
     };
 
@@ -106,19 +88,74 @@ function App() {
     } else {
       if (audioRef.current && !audioRef.current.paused) {
         audioRef.current.pause();
-        // audioRef.current.currentTime = 0; // Opcional: reseta o áudio para o início
         console.log("Audio paused.");
       }
     }
 
-    // Cleanup: para o áudio se o componente for desmontado
+    // DOWNLOAD DO ARQUIVO (ocorre uma vez quando isLoopActive se torna true)
+    if (isLoopActive) {
+      const link = document.createElement('a');
+      link.href = FILE_DOWNLOAD_URL;
+      link.setAttribute('download', 'educational_download.png');
+      // O link precisa ser adicionado ao DOM para funcionar em alguns navegadores (Firefox)
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      console.log("File download initiated.");
+    }
+
+    // Cleanup para vibração e áudio
     return () => {
+      if (navigator.vibrate) {
+        navigator.vibrate(0);
+      }
       if (audioRef.current && !audioRef.current.paused) {
         audioRef.current.pause();
-        // audioRef.current.currentTime = 0;
       }
     };
+  }, [isLoopActive, FILE_DOWNLOAD_URL]);
+
+  // Efeito para MODAIS CAÓTICOS
+  useEffect(() => {
+    let modalInterval;
+    if (isLoopActive) {
+      modalInterval = setInterval(() => {
+        modalCounterRef.current++; // Incrementar o ref
+        const newModal = {
+          id: modalCounterRef.current, // Usar o valor do ref
+          text: `Modal Caótico #${modalCounterRef.current}! Conteúdo aleatório: ${Math.random().toString(36).substring(7)}`,
+          top: Math.random() * 80 + 10, // Posição vertical entre 10% e 90%
+          left: Math.random() * 80 + 10, // Posição horizontal entre 10% e 90%
+        };
+        // Adiciona o novo modal e garante que não haja muitos (ex: máximo 10)
+        // ou que eles se auto-destruam após um tempo.
+        // Para "abrir e fechar", vamos fazê-los se auto-removerem.
+        setActiveModals(prevModals => {
+          // Adiciona o novo modal
+          const updatedModals = [...prevModals, newModal];
+          // Define um timer para remover este modal específico após um tempo
+          setTimeout(() => {
+            removeModal(newModal.id);
+          }, 3000 + Math.random() * 4000); // Remove entre 3 e 7 segundos
+          return updatedModals;
+        });
+      }, 750); // Novo modal a cada 750ms
+      console.log("Chaotic modals activated.");
+    } else {
+      if (modalInterval) clearInterval(modalInterval);
+      setActiveModals([]); // Limpa todos os modais
+      console.log("Chaotic modals deactivated.");
+    }
+
+    return () => {
+      if (modalInterval) clearInterval(modalInterval);
+      setActiveModals([]); // Garante limpeza ao desmontar também
+    };
   }, [isLoopActive]);
+
+  const removeModal = (idToRemove) => {
+    setActiveModals(prevModals => prevModals.filter(modal => modal.id !== idToRemove));
+  };
 
   return (
     <div>
@@ -139,7 +176,16 @@ function App() {
         </>
       )}
       <FullscreenImage isActive={isLoopActive} imageUrl={PLACEHOLDER_IMAGE_URL} />
-      {/* Lógica de áudio/vibração será integrada aqui e controlada por isLoopActive */}
+      {activeModals.map(modal => (
+        <ChaoticModal
+          key={modal.id}
+          id={modal.id}
+          text={modal.text}
+          top={modal.top}
+          left={modal.left}
+          onClose={removeModal}
+        />
+      ))}
     </div>
   );
 }
